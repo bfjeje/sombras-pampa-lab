@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#172b2b"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Pampa Lab"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="description" content="Laboratorio para comprobar PWA, red local, WebSocket y almacenamiento sin conexión en Android e iPhone."/>
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+  <link rel="icon" href="./icons/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="./styles.css"/>
+  <title>Sombras de la Pampa · Laboratorio PWA</title>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">S</div><div><p class="eyebrow">SOMBRAS DE LA PAMPA</p><h1>Laboratorio de conexión</h1></div></div>
+    <span class="pill" id="security-pill">Analizando…</span>
+  </header>
+  <p class="intro">Prueba técnica temporal · <strong>No es la aplicación definitiva.</strong> Verificá por separado conexión Wi‑Fi, permisos del navegador, PWA offline y sincronización entre teléfonos. No escribas información real de la campaña.</p>
+  <div class="notice" id="mode-notice">Cargando diagnóstico de contexto…</div>
+  <section class="panel">
+    <div class="section-title"><span class="number">01</span><div><h2>Conectar con la notebook</h2><p>Usá la IP y el puerto que muestra el programa del servidor.</p></div></div>
+    <label for="server-url">Dirección del servidor</label>
+    <div class="urlbox"><input id="server-url" type="url" inputmode="url" spellcheck="false" autocapitalize="none" placeholder="http://192.168.1.105:8765"/><button id="save-server" class="button">Guardar</button></div>
+    <p class="hint">El QR de la notebook puede rellenar esta dirección. También podés escribirla. El QR no evita restricciones del navegador.</p>
+    <div class="actions"><button class="button primary" id="run-all">Ejecutar diagnóstico completo</button><button class="button subtle" id="run-ping">Probar HTTP</button><a id="direct-link" class="button outline" href="#" target="_blank" rel="noopener">Abrir ping directamente ↗</a></div>
+    <div class="mini-status"><span id="server-state" class="status-dot neutral"></span><span id="server-state-label">Sin probar</span><span class="right" id="server-id-label">Servidor desconocido</span></div>
+  </section>
+  <section class="panel">
+    <div class="section-title"><span class="number">02</span><div><h2>Resultados de cada prueba</h2><p>Un error no oculta los demás: las pruebas son independientes.</p></div></div>
+    <div id="test-results" class="tests">
+      <div class="test-row"><span class="status-dot neutral"></span><div>Sin ejecutar pruebas todavía</div></div>
+    </div>
+    <div class="actions"><button id="run-ws" class="button outline">Probar WebSocket</button><button id="run-echo" class="button outline">Probar POST/CORS</button><button id="run-offline" class="button outline">Revisar modo offline</button><button id="run-error" class="button outline">Provocar HTTP 418</button><button id="run-wrong-port" class="button outline">Simular puerto incorrecto</button></div>
+  </section>
+  <section class="panel">
+    <div class="section-title"><span class="number">03</span><div><h2>Mensajes entre celulares</h2><p>Enviá un texto desde un dispositivo y comprobá si aparece en el otro. Se borran al reiniciar el servidor.</p></div></div>
+    <label for="nickname">Etiqueta del dispositivo</label><input id="nickname" maxlength="32" placeholder="Android / iPhone / Notebook"/>
+    <label for="message">Mensaje de prueba</label><div class="urlbox"><input id="message" maxlength="260" placeholder="Hola desde mi celular"/><button id="send-message" class="button">Enviar</button></div>
+    <div class="mini-status"><span id="ws-dot" class="status-dot neutral"></span><span id="ws-status">WebSocket sin probar</span><span class="right" id="polling-status">HTTP sin probar</span></div>
+    <div id="chat-messages" class="messages"><p class="hint">Los mensajes llegarán aquí. Si WebSocket falla, usaremos una lectura HTTP alternativa.</p></div>
+  </section>
+  <section class="panel">
+    <div class="section-title"><span class="number">04</span><div><h2>Datos offline en el teléfono</h2><p>Esta nota queda en IndexedDB del dispositivo. <strong>No se envía al servidor.</strong></p></div></div>
+    <label for="offline-note">Nota de prueba</label><textarea id="offline-note" rows="3" placeholder="Esta nota debe continuar después de recargar y desconectar el Wi‑Fi."></textarea>
+    <div class="actions"><button class="button" id="save-note">Guardar nota local</button><button class="button outline" id="read-note">Leer nota guardada</button><button class="button subtle" id="clear-note">Borrar nota</button></div>
+    <div class="mini-status"><span id="storage-dot" class="status-dot neutral"></span><span id="storage-status">Sin probar IndexedDB</span></div>
+    <p class="hint">Para probar verdaderamente offline: abrí primero la versión <strong>HTTPS publicada</strong>, esperá a que se registre el Service Worker, cerrá, desactivá Wi‑Fi y datos móviles, y volvé a abrir desde el ícono. La página HTTP local no puede registrar un Service Worker en un celular remoto.</p>
+  </section>
+  <section class="panel">
+    <div class="section-title"><span class="number">05</span><div><h2>Registro detallado y códigos de error</h2><p>Incluye hora, prueba, código, duración, ID de petición, navegador, diagnóstico probable y excepciones observadas.</p></div></div>
+    <div class="metrics"><div><strong id="log-count">0</strong><small>Eventos</small></div><div><strong id="error-count">0</strong><small>Errores</small></div><div><strong id="warning-count">0</strong><small>Advertencias</small></div></div>
+    <div class="actions"><button class="button primary" id="export-log">Descargar diagnóstico JSON</button><button class="button outline" id="copy-log">Copiar resumen</button><button class="button subtle" id="clear-log">Limpiar pantalla</button></div>
+    <label for="log-filter">Filtrar registro</label><select id="log-filter"><option value="ALL">Todos los eventos</option><option value="ERROR">Solo errores</option><option value="WARN">Errores y advertencias</option></select>
+    <div class="logbox" id="log-view" role="log" aria-live="off"></div>
+    <details><summary>¿Qué significan los códigos?</summary>
+      <div class="code-help">
+        <p><code>E_NET_TIMEOUT</code> El servidor no respondió antes del límite. Posible Wi‑Fi, IP, puerto o firewall.</p>
+        <p><code>E_NET_BLOCKED_OR_UNREACHABLE</code> El navegador no devolvió una respuesta accesible. Puede ser HTTP mixto, permiso de red local, CORS, firewall o servidor apagado: <b>no se puede identificar uno solo desde JavaScript</b>.</p>
+        <p><code>E_HTTP_STATUS_*</code> El servidor respondió con ese código HTTP (404, 418, 500…).</p>
+        <p><code>E_SERVER_ID_MISMATCH</code> La dirección apunta a otro servidor distinto del emparejado.</p>
+        <p><code>E_WS_ERROR</code> WebSocket falló. Puede ser bloqueo del navegador, red o servidor.</p>
+        <p><code>E_SW_UNAVAILABLE</code> Service Worker no disponible en este origen o navegador; esperado en HTTP local.</p>
+        <p><code>E_IDB_*</code> Problema al abrir, escribir o leer IndexedDB.</p>
+        <p><code>E_BROWSER_SECURITY_POLICY</code> El navegador notificó explícitamente un bloqueo de política de seguridad.</p>
+        <p><code>E_TEST_EXPECTED_418</code> Error deliberado provocado para verificar el registro, no una avería.</p>
+      </div>
+    </details>
+    <p class="hint">En la notebook, buscá también <code>servidor/logs/servidor-AAAA-MM-DD.jsonl</code>. Compará el <strong>rid</strong> de ambos registros. Si la petición no aparece en el servidor, falló antes de llegar a él.</p>
+  </section>
+  <footer>Laboratorio v0.2 · Sin contraseñas, sin cuentas y sin cifrado de mensajes. Usar solo para pruebas en una red doméstica confiable.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "Sombras de la Pampa — Laboratorio PWA",
+  "short_name": "Pampa Lab",
+  "description": "Prueba de red local, QR, WebSocket y datos offline en Android e iPhone.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2efe8",
+  "theme_color": "#172b2b",
+  "icons": [
+    {"src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
